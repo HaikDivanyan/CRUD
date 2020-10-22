@@ -1,6 +1,7 @@
 const express = require('express')
 const app = express()
 const mongoose = require('mongoose')
+let haik = 'haik'
 
 const PORT = 3000;
 const URI = "mongodb://127.0.0.1:27017/names";
