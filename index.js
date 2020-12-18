@@ -1,11 +1,14 @@
 const express = require('express')
 const app = express()
 const mongoose = require('mongoose')
+const path = require('path')
+var fs = require('fs');
 let haik = 'haik'
 
 const PORT = 3000;
 const URI = "mongodb://127.0.0.1:27017/names";
 
+// Database schema
 let User = new mongoose.Schema({
     name: {
         type: String,
@@ -21,12 +24,22 @@ let User = new mongoose.Schema({
 
 const user = mongoose.model('people', User);
 
+// Middlewares
 app.use(express.json())
 app.use(express.urlencoded({ extended: false }))
+app.use(express.static(path.join(__dirname, 'public')));
+app.set('views', __dirname + '/public/views');
+app.set('view engine', 'ejs');
 
+// Routes
+app.get('/', (req, res, next) => {
+    res.render('index')
+})
 
-app.get('/hello', (req, res, next) => {
-    res.send('Hello World!')
+app.get('/armenia', (req, res, next) => {
+    res.json({
+        city: 'Karvachar'
+    })
 })
 
 app.get('/people-names', async (req, res, next) => {
@@ -88,6 +101,8 @@ app.put('/update-name/:id', async (req, res, next) => {
     })
 })
 
+
+// Database and server connection
 mongoose.connect(URI, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
