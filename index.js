@@ -2,7 +2,6 @@ const express = require('express')
 const app = express()
 const mongoose = require('mongoose')
 const path = require('path')
-var fs = require('fs');
 let haik = 'haik'
 
 const PORT = 3000;
