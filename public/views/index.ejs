@@ -1,14 +1,160 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <%- include('head'); %>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+        <style>
+            .project {
+                margin: 0% auto;
+                background-color: rgba(0, 0, 0, 0.90);
+                color: white;
+                text-transform: uppercase;
+                padding: 1%;
+            }
+
+            button {
+                color: black !important;
+            }
+
+            form {
+                width: 50%;
+                margin: auto;
+                font-weight: lighter;
+                padding: 25px;
+            }
+
+            table,
+            tr,
+            tr,
+            th {
+                text-align: center;
+            }
+        </style>
 </head>
+
 <body>
-    <div class="container text-center bg-primary p5">
+    <div class="container text-center bg-dark p5 project">
         <h1>Bari a xoxa, huncs?</h1>
-        <button onclick="getData()" class="btn btn-primary">ARTSAKH</button>
-        <script src="js/main.js"></script>
+        <hr>
+        <form>
+            <div class="mb-3 w-50">
+                <label for="exampleInputEmail1" class="form-label">Name</label>
+                <input type="email" class="form-control" id="name" aria-describedby="emailHelp">
+            </div>
+            <br>
+            <div class="mb-3">
+                <label for="exampleInputPassword1" class="form-label">Surname</label>
+                <input type="text" class="form-control" id="surname">
+            </div>
+            <br>
+            <button type="button" onclick="send();" class="btn btn-light">SUBMIT</button>
+        </form>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Name</th>
+                    <th scope="col">Last</th>
+                    <th scope="col">Delete</th>
+                    <th scope="col">Update</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+        <script>
+            async function send() {
+                const url = "http://localhost:3000/login";
+                var name = document.getElementById('name').value;
+                var surname = document.getElementById('surname').value;
+
+                if (!(name.length > 0 && surname.length > 0)) {
+                    return console.log('Error');
+                }
+
+                console.log(name + " " + surname);
+
+                const res = await fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        name: name,
+                        surname: surname
+                    })
+                });
+
+                var data = await res.json();
+                get();
+            }
+
+            async function get() {
+                const url = "http://localhost:3000/people-names";
+                const res = await fetch(url, {
+                    method: 'GET'
+                });
+
+                var data = await res.json();
+
+                var tbody = document.getElementsByTagName('tbody')[0]
+                removeAllChildNodes(tbody)
+                for (let index = data.length-1; index >= 0; index--) {
+                    var name_cell = tbody.insertRow(0);
+                    name_cell.innerHTML = index + 1;
+                    var x = name_cell.insertCell(0)
+                    x.innerHTML = data[index].name
+                    x = name_cell.insertCell(1)
+                    x.innerHTML = data[index].surname
+                    x = name_cell.insertCell(2)
+                    x.innerHTML = `<button id=${data[index]._id} onclick=delete_obj(this);>X</button>`;
+
+                    x = name_cell.insertCell(3)
+                    x.innerHTML = `<button id=${data[index]._id} onclick=update_obj(this);>+</button>`;
+                }
+            }
+
+            async function delete_obj(obj) {
+                console.log(obj)
+                const url = `http://localhost:3000/delete-name/${obj.getAttribute('id')}`;
+                console.log(url)
+
+                const res = await fetch(url, {
+                    method: 'DELETE'
+                });
+                
+                get();
+            }
+
+            async function update_obj(obj) {
+                const url = `http://localhost:3000/update-name/${obj.getAttribute('id')}`;
+                const res = await fetch(url, {
+                    method: 'PUT',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        name: prompt('Introduce name'),
+                        surname: prompt('Introduce surname')
+                    })
+                });
+
+                get();
+            }
+
+            function removeAllChildNodes(parent) {
+                while (parent.firstChild) {
+                    parent.removeChild(parent.firstChild);
+                }
+            }
+            
+            window.onload = get();
+
+        </script>
     </div>
 </body>
+
 </html>

@@ -17,7 +17,6 @@ let User = new mongoose.Schema({
     surname: {
         type: String,
         required: true,
-        unique: true
     }
 });
 
@@ -63,6 +62,8 @@ app.get('/person-names/:id', async (req, res, next) => {
 
 app.post('/login', async (req, res, next) => {
 
+    console.log(req.body)
+
     var newUser = new user({
         name: req.body.name,
         surname: req.body.surname
@@ -89,8 +90,9 @@ app.delete('/delete-name/:id', async (req, res, next) => {
 })
 
 app.put('/update-name/:id', async (req, res, next) => {
-    await user.findByIdAndUpdate(req.params.id, {
-        name: req.body.name
+    console.log(req.body)
+    await user.findOneAndUpdate({_id: req.params.id}, {
+        $set: req.body
     }, { new: true }, (err, obj) => {
         if (err) {
             console.log(err)
@@ -102,10 +104,12 @@ app.put('/update-name/:id', async (req, res, next) => {
 
 
 // Database and server connection
+mongoose.set('useFindAndModify', false);
 mongoose.connect(URI, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
-    useCreateIndex: true
+    useCreateIndex: true,
+    useFindAndModify: true
 }, (err) => {
     if (err) {
         return console.log(err)

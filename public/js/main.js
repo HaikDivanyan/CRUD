@@ -1,7 +1,7 @@
 'use strict';
 
 async function getData() {
-    const url = "http://localhost:3000/armenia";
+    const url = "http://localhost:3000/login";
     const url2 = "http://localhost:3000/person-names/5f9208235d99702e4092374f";
     const url3 = "http://localhost:3000/people-names";
 
